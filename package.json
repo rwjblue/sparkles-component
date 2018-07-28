@@ -23,7 +23,9 @@
     "ember-cli-babel": "^6.16.0"
   },
   "devDependencies": {
+    "@ember-decorators/babel-transforms": "^2.0.2",
     "@ember/optional-features": "^0.6.1",
+    "babel-eslint": "^8.2.6",
     "broccoli-asset-rev": "^2.7.0",
     "ember-ajax": "^3.0.0",
     "ember-cli": "~3.4.0-beta.1",
