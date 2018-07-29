@@ -2,14 +2,14 @@ import Ember from 'ember';
 import { assert } from '@ember/debug';
 import { addObserver } from '@ember/object/observers';
 
-function setupObservers(instance, dependentKeys, notifyMethod) {
+function setupObservers(instance: any, dependentKeys: string[], notifyMethod: ObserverMethod<any, any>) {
   for (let i = 0; i < dependentKeys.length; i++) {
     let dependentKey = dependentKeys[i];
     addObserver(instance, dependentKey, instance, notifyMethod);
   }
 }
 
-function descriptorForTrackedComputedProperty(target, key, desc, dependencies) {
+function descriptorForTrackedComputedProperty(_target: any, key: any, descriptor: PropertyDescriptor, ...dependencies: any[]) {
   // TODO: really should use WeakSet here, but that isn't available on IE11
   const OBSERVERS_SETUP = new WeakMap();
 
@@ -25,15 +25,15 @@ function descriptorForTrackedComputedProperty(target, key, desc, dependencies) {
       return true;
     })()
   );
-  let getterProvided = desc.get;
-  let setterProvided = desc.set;
+  let getterProvided = descriptor.get;
+  let setterProvided = descriptor.set;
 
   // will be bound to the instance when invoked
-  function notify() {
+  function notify(this: any) {
     Ember.notifyPropertyChange(this, key);
   }
 
-  desc.get = function() {
+  descriptor.get = function(this: any) {
     if (!OBSERVERS_SETUP.has(this)) {
       setupObservers(this, dependencies, notify);
       OBSERVERS_SETUP.set(this, true);
@@ -43,23 +43,23 @@ function descriptorForTrackedComputedProperty(target, key, desc, dependencies) {
   };
 
   if (setterProvided) {
-    desc.set = function(value) {
+    descriptor.set = function(this: any, value) {
       Ember.notifyPropertyChange(this, key);
 
       setterProvided.call(this, value);
     };
   }
 
-  return desc;
+  return descriptor;
 }
 
-function installTrackedProperty(target, key, descriptor) {
+function installTrackedProperty(_target: any, key: string, descriptor: PropertyDescriptor) {
   let initializer = descriptor && descriptor.initializer;
   let values = new WeakMap();
 
   let get;
   if (initializer) {
-    get = function() {
+    get = function(this: any) {
       if (values.has(this)) {
         return values.get(this);
       } else {
@@ -69,7 +69,7 @@ function installTrackedProperty(target, key, descriptor) {
       }
     };
   } else {
-    get = function() {
+    get = function(this: any) {
       return values.get(this);
     }
   }
@@ -79,17 +79,21 @@ function installTrackedProperty(target, key, descriptor) {
     writeable: true,
 
     get,
-    set(value) {
+    set(value: any) {
       values.set(this, value);
       Ember.notifyPropertyChange(this, key);
     }
   };
 }
 
-export function tracked(...args) {
+export function tracked(...dependencies: string[]): MethodDecorator;
+export function tracked(target: any, key: any): any;
+export function tracked(target: any, key: any, descriptor: PropertyDescriptor): PropertyDescriptor;
+export function tracked(target: any, key: any, descriptor: PropertyDescriptor, ...dependencies: any[]): PropertyDescriptor;
+export function tracked(...args: any[]): any {
   // if called for `@tracked('foo')`
   if (typeof args[0] === 'string') {
-    return function(target, key, descriptor) {
+    return function(target: any, key: string, descriptor: PropertyDescriptor) {
       return tracked(target, key, descriptor, args);
     };
   } else {
