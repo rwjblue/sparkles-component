@@ -15,8 +15,6 @@ ember install sparkles-component
 Usage
 ------------------------------------------------------------------------------
 
-### Component
-
 The `sparkles-component` API supports most of the `@glimmer/component` API, including:
 
 * Lifecycle hooks
@@ -31,6 +29,13 @@ The `sparkles-component` API supports most of the `@glimmer/component` API, incl
 * Decorator Support
   * Support for consuming with Babel 6 (just install `@ember-decorators/babel-transform`)
   * Support consuming via TypeScript (enable via `experimentalDecorators` compiler option in `tsconfig.json`)
+
+Missing features from `@glimmer/component`:
+
+* Access to `this.bounds` within the component. At the moment there is no access available at all to the rendered DOM. The easiest work around for now would be to use an attribute in your template along with `document.querySelector`.
+* Access to `this.debugName` within the component. This was largely only present for debugging purposes, but is not possible to access in the Ember APIs at the moment.
+
+### Example
 
 Comprehensive example (nearly **exactly** the same as the [the glimmer.js guides](https://glimmerjs.com/guides/components-and-actions)):
 
