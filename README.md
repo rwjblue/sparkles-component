@@ -1,7 +1,8 @@
 sparkles-component
 ==============================================================================
 
-[Short description of the addon.]
+Addon used to experiment with `@glimmer/component` style APIs in Ember apps via
+existing public APIs.
 
 Installation
 ------------------------------------------------------------------------------
@@ -14,7 +15,67 @@ ember install sparkles-component
 Usage
 ------------------------------------------------------------------------------
 
-[Longer description of how to use the addon in apps.]
+### Component
+
+The `sparkles-component` API supports most of the `@glimmer/component` API, including:
+
+* Lifecycle hooks
+  * `constructor` - will be called when the component is needed, passed the evaluated named arguments for the component
+  * `didInsertElement` - will be called after the component has been rendered the first time, after the whole top-down rendering process is completed
+  * `didUpdate` - will be called after the component has been updated, after the whole top-down rendering process is completed
+  * `destroy` - will be called when the component is no longer needed
+* Tracked properties
+  * Support for setting local properties (triggering a rerender of that property)
+  * Support for setting up dependent keys to cause a properties getter to be invoked again
+  * Support for tracking class fields
+* Decorator Support
+  * Support for consuming with Babel 6 (just install `@ember-decorators/babel-transform`)
+  * Support consuming via TypeScript (enable via `experimentalDecorators` compiler option in `tsconfig.json`)
+
+Comprehensive example (nearly **exactly** the same as the [the glimmer.js guides](https://glimmerjs.com/guides/components-and-actions)):
+
+```js
+// app/components/conference-speakers.js (.ts would also work)
+import Component, { tracked } from "sparkles-component";
+
+export default class ConferenceSpeakers extends Component {
+  @tracked current = 0;
+  speakers = ['Tom', 'Yehuda', 'Ed'];
+
+  @tracked('current')
+  get currentlySpeaking() {
+    return this.speakers[this.current];
+  }
+
+  @tracked('current')
+  get moreSpeakers() {
+    return (this.speakers.length - 1) > this.current;
+  }
+
+  next() {
+    this.current = this.current + 1;
+  }
+}
+```
+
+```hbs
+{{!-- app/templates/components/conference-speakers.hbs --}}
+
+<div>
+  <p>Speaking: {{currentlySpeaking}}</p>
+  <ul>
+    {{#each speakers key="@index" as |speaker|}}
+      <li>{{speaker}}</li>
+    {{/each}}
+  </ul>
+
+  {{#if moreSpeakers}}
+    <button onclick={{action next}}>Next</button>
+  {{else}}
+    <p>All finished!</p>
+  {{/if}}
+</div>
+```
 
 
 Contributing
