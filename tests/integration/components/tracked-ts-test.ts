@@ -45,7 +45,7 @@ module('tracked: ts', function(hooks) {
       </div>
     `);
     class UnderTest extends SparklesComponent {
-      @tracked current;
+      @tracked current: number | undefined;
 
       increment() {
         // silly, but whatever
@@ -78,6 +78,8 @@ module('tracked: ts', function(hooks) {
       </div>
     `);
     class UnderTest extends SparklesComponent {
+      _value: number;
+
       constructor() {
         super(...arguments);
         this._value = 0;
