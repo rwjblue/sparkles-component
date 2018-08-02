@@ -17,7 +17,7 @@ function descriptorForTrackedComputedProperty(target, key, desc, dependencies) {
     `You cannot use property paths with the tracked decorator, but for ${key} you specified \`${dependencies.join('`, `')}\`.`,
     (function() {
       for (let i = 0; i < dependencies.length; i++) {
-        if (dependencies.indexOf('.') > -1) {
+        if (dependencies[i].indexOf('.') > -1) {
           return false;
         }
       }
