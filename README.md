@@ -1,6 +1,8 @@
 sparkles-component
 ==============================================================================
 
+![R. Sparkles](https://media.giphy.com/media/NwkYPLmQSLmhy/giphy.gif)
+
 Addon used to experiment with `@glimmer/component` style APIs in Ember apps via
 existing public APIs.
 
