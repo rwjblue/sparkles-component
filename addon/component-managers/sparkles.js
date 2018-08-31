@@ -13,10 +13,8 @@ export default class SparklesComponentManager {
     });
   }
 
-  createComponent(Factory, args) {
-    // TODO: fix this in Ember, we should receive the `.class` directly
-    // but instead are receiving the `FactoryManager` (the private one)
-    return new Factory.class(args.named);
+  createComponent(Klass, args) {
+    return new Klass(args.named);
   }
 
   updateComponent(component, args) {
