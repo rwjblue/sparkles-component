@@ -3,6 +3,7 @@ import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { render, clearRender, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
+import { getOwner } from '@ember/application';
 
 module('Integration | Component | sparkles-component', function(hooks) {
   let InstrumentedComponent;
@@ -207,4 +208,18 @@ module('Integration | Component | sparkles-component', function(hooks) {
     await click('button[data-test=increment]');
     assert.dom('p').hasText('Count: 0');
   });
+
+  test('it has an owner', async function(assert) {
+    this.owner.register('component:under-test', class extends SparklesComponent {
+      get environment() {
+        return getOwner(this).resolveRegistration("config:environment").environment;
+      }
+    });
+    this.owner.register(
+      'template:components/under-test',
+      hbs`<p>Environment: {{this.environment}}</p>`
+    );
+    await render(hbs`<UnderTest />`);
+    assert.dom('p').hasText('Environment: test');
+  })
 });
