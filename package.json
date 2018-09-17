@@ -20,6 +20,7 @@
     "test:all": "ember try:each"
   },
   "dependencies": {
+    "@glimmer/env": "^0.1.7",
     "ember-cli-babel": "^6.16.0"
   },
   "devDependencies": {

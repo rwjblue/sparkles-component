@@ -1,10 +1,7 @@
 import Ember from 'ember';
 
-class SparklesComponent {
-  args: any;
-  constructor(args) {
-    this.args = args;
-  }
+class SparklesComponent<T> {
+  constructor(public args: T) {}
 
   didInsertElement() {}
   didUpdate() {}

@@ -10,6 +10,8 @@ declare module 'ember' {
       asyncLifecycleCallbacks?: boolean;
     }): any;
 
-    function notifyPropertyChange(target: object, key: string);
+    function notifyPropertyChange(target: object, key: string): void;
+    function addObserver<T>(target: T, dependentKey: string, instance: any, notifyMethod: () => void): T;
+
   }
 }
