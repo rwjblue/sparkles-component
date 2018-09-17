@@ -80,8 +80,8 @@ module('tracked: ts', function(hooks) {
     class UnderTest extends SparklesComponent {
       _value: number;
 
-      constructor() {
-        super(...arguments);
+      constructor(arg) {
+        super(arg);
         this._value = 0;
       }
 

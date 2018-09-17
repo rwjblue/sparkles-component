@@ -5,9 +5,9 @@ import { getOwner, setOwner } from '@ember/application';
 export default class SparklesComponentManager {
   static create(attrs) {
     let owner = getOwner(attrs);
-    return new this(owner, attrs);
+    return new this(owner);
   }
-
+  capabilities: any;
   constructor(owner) {
     setOwner(this, owner);
     this.capabilities = Ember._componentManagerCapabilities('3.4', {

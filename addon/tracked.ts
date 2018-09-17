@@ -9,7 +9,7 @@ function setupObservers(instance, dependentKeys, notifyMethod) {
   }
 }
 
-function descriptorForTrackedComputedProperty(target, key, desc, dependencies) {
+function descriptorForTrackedComputedProperty(_target, key, desc, dependencies) {
   // TODO: really should use WeakSet here, but that isn't available on IE11
   const OBSERVERS_SETUP = new WeakMap();
 
@@ -29,7 +29,7 @@ function descriptorForTrackedComputedProperty(target, key, desc, dependencies) {
   let setterProvided = desc.set;
 
   // will be bound to the instance when invoked
-  function notify() {
+  function notify(this: object) {
     Ember.notifyPropertyChange(this, key);
   }
 
@@ -53,13 +53,13 @@ function descriptorForTrackedComputedProperty(target, key, desc, dependencies) {
   return desc;
 }
 
-function installTrackedProperty(target, key, descriptor) {
+function installTrackedProperty(_target, key, descriptor) {
   let initializer = descriptor && descriptor.initializer;
   let values = new WeakMap();
 
   let get;
   if (initializer) {
-    get = function() {
+    get = function(this: object) {
       if (values.has(this)) {
         return values.get(this);
       } else {
@@ -69,7 +69,7 @@ function installTrackedProperty(target, key, descriptor) {
       }
     };
   } else {
-    get = function() {
+    get = function(this: object) {
       return values.get(this);
     }
   }

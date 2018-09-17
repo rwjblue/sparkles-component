@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 class SparklesComponent {
+  args: any;
   constructor(args) {
     this.args = args;
   }
