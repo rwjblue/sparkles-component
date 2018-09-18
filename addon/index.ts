@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-class SparklesComponent<T> {
+class SparklesComponent<T = object> {
   constructor(public args: T) {}
 
   didInsertElement() {}

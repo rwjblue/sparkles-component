@@ -17,9 +17,9 @@ function descriptorForTrackedComputedProperty(_target: any, key: string | symbol
   assert(
     `You cannot use property paths with the tracked decorator, but for ${String(key)} you specified \`${(dependencies || []).join('`, `')}\`.`,
     (function() {
-      if (dependencies === void 0) return true; // @tracked()
+      if (dependencies === undefined) return true; // @tracked()
       for (let i = 0; i < dependencies.length; i++) {
-        if (dependencies[i].indexOf('.') > -1) {
+        if (dependencies[i] !== undefined && dependencies[i].indexOf('.') > -1) {
           return false;
         }
       }
@@ -91,7 +91,8 @@ function installTrackedProperty(_target: object, key: string | symbol, descripto
 
   return {
     configurable: true,
-    writable: true,
+    // TODO: correcting a misspelling caused chrome to error
+    // writable: true,
 
     get,
     set(value) {
@@ -115,17 +116,20 @@ function _tracked(target: object, key: string | symbol, descriptor?: PropertyDes
   }
 }
 
-type CompatiblePropertyDecorator = (target: object, key: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor;
+// type CompatiblePropertyDecorator = (target: object, key: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor;
 
 // @tracked
-export function tracked(target: object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): PropertyDescriptor;
+// TODO: replace return w/ PropertyDescriptor once TS gets their decorator act together
+export function tracked(target: object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): any;
 // @tracked('foo', 'bar')
-export function tracked(...args: string[]): CompatiblePropertyDecorator;
+// TODO: replace return w/ CompatiblePropertyDecorator
+export function tracked(...args: string[]): any;
+// TODO: replace return w/ CompatiblePropertyDecorator | PropertyDescriptor
 export function tracked(
   targetOrArgs: (string | object),
   secondArg: string | symbol,
   descriptorOrString: string | PropertyDescriptor | undefined,
-  ...rest: string[]): PropertyDescriptor | CompatiblePropertyDecorator
+  ...rest: string[]): any
   {
   // if called for `@tracked('foo')`
   if (typeof targetOrArgs === 'string') { //  @tracked('foo', 'bar')
