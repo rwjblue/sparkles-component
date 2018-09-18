@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { setComponentManager } from '@ember/component';
 
 class SparklesComponent<T = object> {
   constructor(public args: T) {}
@@ -9,8 +9,7 @@ class SparklesComponent<T = object> {
   // didRender() {}
   destroy() {}
 }
-// eslint-disable-next-line ember/new-module-imports
-Ember._setComponentManager('sparkles', SparklesComponent);
+setComponentManager('sparkles', SparklesComponent);
 
 export default SparklesComponent;
 

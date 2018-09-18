@@ -1,7 +1,7 @@
-import Ember from 'ember';
 import { set } from '@ember/object';
 import { getOwner, setOwner } from '@ember/application';
 import ApplicationInstance from '@ember/application/instance';
+import { capabilities } from '@ember/component';
 import SparklesComponent from 'sparkles-component';
 
 export interface ComponentManagerArgs {
@@ -18,7 +18,7 @@ export default class SparklesComponentManager {
   capabilities: any;
   constructor(owner: ApplicationInstance) {
     setOwner(this, owner);
-    this.capabilities = Ember._componentManagerCapabilities('3.4', {
+    this.capabilities = capabilities('3.4', {
       destructor: true,
       asyncLifecycleCallbacks: true,
     });
