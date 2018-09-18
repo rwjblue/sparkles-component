@@ -9,7 +9,7 @@ class SparklesComponent<T = object> {
   // didRender() {}
   destroy() {}
 }
-
+// eslint-disable-next-line ember/new-module-imports
 Ember._setComponentManager('sparkles', SparklesComponent);
 
 export default SparklesComponent;
