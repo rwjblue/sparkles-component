@@ -69,15 +69,15 @@ export default class ConferenceSpeakers extends Component {
 {{!-- app/templates/components/conference-speakers.hbs --}}
 
 <div>
-  <p>Speaking: {{currentlySpeaking}}</p>
+  <p>Speaking: {{this.currentlySpeaking}}</p>
   <ul>
-    {{#each speakers key="@index" as |speaker|}}
+    {{#each this.speakers key="@index" as |speaker|}}
       <li>{{speaker}}</li>
     {{/each}}
   </ul>
 
-  {{#if moreSpeakers}}
-    <button onclick={{action next}}>Next</button>
+  {{#if this.moreSpeakers}}
+    <button onclick={{action this.next}}>Next</button>
   {{else}}
     <p>All finished!</p>
   {{/if}}
