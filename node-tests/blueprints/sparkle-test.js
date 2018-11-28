@@ -154,3 +154,77 @@ export default class XBiz extends Component {
     );
   });
 });
+
+describe('MU App Layout: ember generate and destroy a sparkle component', function() {
+  setupTestHooks(this);
+
+  it('ember g sparkle x-foo', function() {
+    // pass any additional command line options in the arguments array
+    return emberNew({ isModuleUnification: true }).then(() =>
+      emberGenerateDestroy(
+        ['sparkle', 'x-foo'],
+        file => {
+          expect(file('src/ui/components/x-foo/component.js')).to.eq(
+            `import Component, { tracked } from 'sparkles-component';
+
+export default class XFoo extends Component {
+
+}
+`
+          );
+          expect(file('src/ui/components/x-foo/template.hbs')).to.eq(
+            `{{yield}}
+`
+          );
+        },
+        { isModuleUnification: true }
+      )
+    );
+  });
+  it('ember g sparkle x-foo --lang js', function() {
+    // pass any additional command line options in the arguments array
+    return emberNew({ isModuleUnification: true }).then(() =>
+      emberGenerateDestroy(
+        ['sparkle', 'x-foo', '--lang', 'js'],
+        file => {
+          expect(file('src/ui/components/x-foo/component.js')).to.eq(
+            `import Component, { tracked } from 'sparkles-component';
+
+export default class XFoo extends Component {
+
+}
+`
+          );
+          expect(file('src/ui/components/x-foo/template.hbs')).to.eq(
+            `{{yield}}
+`
+          );
+        },
+        { isModuleUnification: true }
+      )
+    );
+  });
+  it('ember g sparkle x-foo --lang ts', function() {
+    // pass any additional command line options in the arguments array
+    return emberNew({ isModuleUnification: true }).then(() =>
+      emberGenerateDestroy(
+        ['sparkle', 'x-foo', '--lang', 'ts'],
+        file => {
+          expect(file('src/ui/components/x-foo/component.ts')).to.eq(
+            `import Component, { tracked } from 'sparkles-component';
+
+export default class XFoo extends Component {
+
+}
+`
+          );
+          expect(file('src/ui/components/x-foo/template.hbs')).to.eq(
+            `{{yield}}
+`
+          );
+        },
+        { isModuleUnification: true }
+      )
+    );
+  });
+});
