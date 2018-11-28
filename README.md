@@ -29,7 +29,7 @@ The `sparkles-component` API supports most of the `@glimmer/component` API, incl
   * Support for setting up dependent keys to cause a properties getter to be invoked again
   * Support for tracking class fields
 * Decorator Support
-  * Support for consuming with Babel 6 (just install `@ember-decorators/babel-transform`)
+  * Support for consuming with Babel 6 (run `ember install -S @ember-decorators/babel-transforms@^2.0.0`)
   * Support consuming via TypeScript (enable via `experimentalDecorators` compiler option in `tsconfig.json`)
 
 Missing features from `@glimmer/component`:
