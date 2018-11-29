@@ -37,7 +37,7 @@ module('Integration | Component | x-foo', function(hooks) {
 
     await render(hbs\`{{x-foo}}\`);
 
-    assert.equal(this.element.textContent.trim(), '');
+    assert.equal(('' + this.element.textContent).trim(), '');
 
     // Template block usage:
     await render(hbs\`
@@ -46,7 +46,7 @@ module('Integration | Component | x-foo', function(hooks) {
       {{/x-foo}}
     \`);
 
-    assert.equal(this.element.textContent.trim(), 'template block text');
+    assert.equal(('' + this.element.textContent).trim(), 'template block text');
   });
 });
 `
@@ -87,7 +87,7 @@ module('Integration | Component | x-foo', function(hooks) {
 
     await render(hbs\`{{x-foo}}\`);
 
-    assert.equal(this.element.textContent.trim(), '');
+    assert.equal(('' + this.element.textContent).trim(), '');
 
     // Template block usage:
     await render(hbs\`
@@ -96,7 +96,7 @@ module('Integration | Component | x-foo', function(hooks) {
       {{/x-foo}}
     \`);
 
-    assert.equal(this.element.textContent.trim(), 'template block text');
+    assert.equal(('' + this.element.textContent).trim(), 'template block text');
   });
 });
 `
@@ -138,7 +138,7 @@ module('Integration | Component | x-foo', function(hooks) {
 
     await render(hbs\`{{x-foo}}\`);
 
-    assert.equal(this.element.textContent.trim(), '');
+    assert.equal(('' + this.element.textContent).trim(), '');
 
     // Template block usage:
     await render(hbs\`
@@ -147,7 +147,7 @@ module('Integration | Component | x-foo', function(hooks) {
       {{/x-foo}}
     \`);
 
-    assert.equal(this.element.textContent.trim(), 'template block text');
+    assert.equal(('' + this.element.textContent).trim(), 'template block text');
   });
 });
 `

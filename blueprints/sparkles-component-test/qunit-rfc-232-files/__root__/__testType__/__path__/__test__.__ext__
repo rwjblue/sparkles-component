@@ -12,7 +12,7 @@ module('<%= friendlyTestDescription %>', function(hooks) {
 
     await render(hbs`{{<%= componentPathName %>}}`);
 
-    assert.equal(this.element.textContent.trim(), '');
+    assert.equal(('' + this.element.textContent).trim(), '');
 
     // Template block usage:
     await render(hbs`
@@ -21,7 +21,7 @@ module('<%= friendlyTestDescription %>', function(hooks) {
       {{/<%= componentPathName %>}}
     `);
 
-    assert.equal(this.element.textContent.trim(), 'template block text');
+    assert.equal(('' + this.element.textContent).trim(), 'template block text');
   });
 });<% } else if (testType === 'unit') { %>import { module, test } from 'qunit';
 import { setupTest } from 'ember-qunit';
