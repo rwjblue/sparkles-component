@@ -22,6 +22,35 @@ export default class XFoo extends Component {
 }
 `
         );
+        expect(file('tests/integration/components/x-foo-test.js')).to.eq(
+          `import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
+import hbs from 'htmlbars-inline-precompile';
+
+module('Integration | Component | x-foo', function(hooks) {
+  setupRenderingTest(hooks);
+
+  test('it renders', async function(assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.set('myAction', function(val) { ... });
+
+    await render(hbs\`{{x-foo}}\`);
+
+    assert.equal(this.element.textContent.trim(), '');
+
+    // Template block usage:
+    await render(hbs\`
+      {{#x-foo}}
+        template block text
+      {{/x-foo}}
+    \`);
+
+    assert.equal(this.element.textContent.trim(), 'template block text');
+  });
+});
+`
+        );
         expect(file('app/templates/components/x-foo.hbs')).to.eq(
           `{{yield}}
 `
@@ -41,6 +70,35 @@ export default class XFoo extends Component {
 export default class XFoo extends Component {
 
 }
+`
+          );
+          expect(file('tests/integration/components/x-foo-test.ts')).to.eq(
+            `import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
+import hbs from 'htmlbars-inline-precompile';
+
+module('Integration | Component | x-foo', function(hooks) {
+  setupRenderingTest(hooks);
+
+  test('it renders', async function(assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.set('myAction', function(val) { ... });
+
+    await render(hbs\`{{x-foo}}\`);
+
+    assert.equal(this.element.textContent.trim(), '');
+
+    // Template block usage:
+    await render(hbs\`
+      {{#x-foo}}
+        template block text
+      {{/x-foo}}
+    \`);
+
+    assert.equal(this.element.textContent.trim(), 'template block text');
+  });
+});
 `
           );
           expect(file('app/templates/components/x-foo.hbs')).to.eq(
@@ -63,6 +121,35 @@ export default class XFoo extends Component {
 export default class XFoo extends Component {
 
 }
+`
+          );
+          expect(file('tests/integration/components/x-foo-test.js')).to.eq(
+            `import { module, test } from 'qunit';
+import { setupRenderingTest } from 'ember-qunit';
+import { render } from '@ember/test-helpers';
+import hbs from 'htmlbars-inline-precompile';
+
+module('Integration | Component | x-foo', function(hooks) {
+  setupRenderingTest(hooks);
+
+  test('it renders', async function(assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.set('myAction', function(val) { ... });
+
+    await render(hbs\`{{x-foo}}\`);
+
+    assert.equal(this.element.textContent.trim(), '');
+
+    // Template block usage:
+    await render(hbs\`
+      {{#x-foo}}
+        template block text
+      {{/x-foo}}
+    \`);
+
+    assert.equal(this.element.textContent.trim(), 'template block text');
+  });
+});
 `
           );
           expect(file('app/templates/components/x-foo.hbs')).to.eq(

@@ -100,7 +100,6 @@ module.exports = {
   },
   locals(options) {
     const { lang = this.getDefaultLang(options) } = options;
-
     const classifiedModuleName = stringUtil.classify(options.entity.name);
     return {
       classifiedModuleName,

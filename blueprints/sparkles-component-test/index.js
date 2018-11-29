@@ -6,7 +6,8 @@ const isPackageMissing = require('ember-cli-is-package-missing');
 const getPathOption = require('ember-cli-get-component-path-option');
 
 const useTestFrameworkDetector = require('../test-framework-detector');
-const isModuleUnificationProject = require('../module-unification').isModuleUnificationProject;
+const isModuleUnificationProject = require('../module-unification')
+  .isModuleUnificationProject;
 
 module.exports = useTestFrameworkDetector({
   description: 'Generates a component integration or unit test.',
@@ -20,14 +21,21 @@ module.exports = useTestFrameworkDetector({
         { i: 'integration' },
         { u: 'unit' },
         { integration: 'integration' },
-        { unit: 'unit' },
-      ],
+        { unit: 'unit' }
+      ]
     },
+    {
+      name: 'lang',
+      type: String
+    }
   ],
 
-  fileMapTokens: function() {
+  fileMapTokens() {
     if (isModuleUnificationProject(this.project)) {
       return {
+        __ext__(options) {
+          return options.locals.lang;
+        },
         __test__() {
           return 'component-test';
         },
@@ -49,10 +57,13 @@ module.exports = useTestFrameworkDetector({
             throw "Pods aren't supported within a module unification app";
           }
           return path.join('ui', 'components', options.dasherizedModuleName);
-        },
+        }
       };
     } else {
       return {
+        __ext__(options) {
+          return options.locals.lang;
+        },
         __root__() {
           return 'tests';
         },
@@ -61,15 +72,23 @@ module.exports = useTestFrameworkDetector({
         },
         __path__(options) {
           if (options.pod) {
-            return path.join(options.podPath, options.locals.path, options.dasherizedModuleName);
+            return path.join(
+              options.podPath,
+              options.locals.path,
+              options.dasherizedModuleName
+            );
           }
           return 'components';
-        },
+        }
       };
     }
   },
-
-  locals: function(options) {
+  getDefaultLang(options) {
+    // if the ember-cli-typescript addon is detected, use ts as default
+    if ('ember-cli-typescript' in options.project.addonPackages) return 'ts';
+    else return 'js'; // otherwise use js as default
+  },
+  locals(options) {
     let dasherizedModuleName = stringUtil.dasherize(options.entity.name);
     let componentPathName = dasherizedModuleName;
     let testType = options.testType || 'integration';
@@ -77,11 +96,13 @@ module.exports = useTestFrameworkDetector({
     let friendlyTestDescription = [
       testType === 'unit' ? 'Unit' : 'Integration',
       'Component',
-      dasherizedModuleName,
+      dasherizedModuleName
     ].join(' | ');
 
     if (options.pod && options.path !== 'components' && options.path !== '') {
-      componentPathName = [options.path, dasherizedModuleName].filter(Boolean).join('/');
+      componentPathName = [options.path, dasherizedModuleName]
+        .filter(Boolean)
+        .join('/');
     } else if (isModuleUnificationProject(this.project)) {
       if (options.inRepoAddon) {
         componentPathName = `${options.inRepoAddon}::${dasherizedModuleName}`;
@@ -89,24 +110,26 @@ module.exports = useTestFrameworkDetector({
         componentPathName = `${this.project.pkg.name}::${dasherizedModuleName}`;
       }
     }
+    const { lang = this.getDefaultLang(options) } = options;
 
     return {
       path: getPathOption(options),
-      testType: testType,
-      componentPathName: componentPathName,
-      friendlyTestDescription: friendlyTestDescription,
+      testType,
+      lang,
+      componentPathName,
+      friendlyTestDescription: friendlyTestDescription
     };
   },
 
-  afterInstall: function(options) {
+  afterInstall(options) {
     if (
       !options.dryRun &&
       options.testType === 'integration' &&
       isPackageMissing(this, 'ember-cli-htmlbars-inline-precompile')
     ) {
       return this.addPackagesToProject([
-        { name: 'ember-cli-htmlbars-inline-precompile', target: '^0.3.1' },
+        { name: 'ember-cli-htmlbars-inline-precompile', target: '^0.3.1' }
       ]);
     }
-  },
+  }
 });
