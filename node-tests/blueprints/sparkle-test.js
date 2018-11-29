@@ -15,7 +15,7 @@ describe('Classic App Layout: ember generate and destroy a sparkle component', f
     return emberNew().then(() =>
       emberGenerateDestroy(['sparkles-component', 'x-foo'], file => {
         expect(file('app/components/x-foo.js')).to.eq(
-          `import Component, { tracked } from 'sparkles-component';
+          `import Component from 'sparkles-component';
 
 export default class XFoo extends Component {
 
@@ -36,7 +36,7 @@ export default class XFoo extends Component {
         ['sparkles-component', 'x-foo', '--lang', 'ts'],
         file => {
           expect(file('app/components/x-foo.ts')).to.eq(
-            `import Component, { tracked } from 'sparkles-component';
+            `import Component from 'sparkles-component';
 
 export default class XFoo extends Component {
 
@@ -58,7 +58,7 @@ export default class XFoo extends Component {
         ['sparkles-component', 'x-foo', '--lang', 'js'],
         file => {
           expect(file('app/components/x-foo.js')).to.eq(
-            `import Component, { tracked } from 'sparkles-component';
+            `import Component from 'sparkles-component';
 
 export default class XFoo extends Component {
 
@@ -83,7 +83,7 @@ describe('Classic Addon Layout: ember generate and destroy a sparkle component',
     return emberNew({ target: 'addon' }).then(() =>
       emberGenerateDestroy(['sparkles-component', 'x-boz'], file => {
         expect(file('addon/components/x-boz.js')).to.eq(
-          `import Component, { tracked } from 'sparkles-component';
+          `import Component from 'sparkles-component';
 
 export default class XBoz extends Component {
 
@@ -112,7 +112,7 @@ export default class XBoz extends Component {
         ['sparkles-component', 'x-baz', '--lang', 'js'],
         file => {
           expect(file('addon/components/x-baz.js')).to.eq(
-            `import Component, { tracked } from 'sparkles-component';
+            `import Component from 'sparkles-component';
 
 export default class XBaz extends Component {
 
@@ -142,7 +142,7 @@ export default class XBaz extends Component {
         ['sparkles-component', 'x-biz', '--lang', 'ts'],
         file => {
           expect(file('addon/components/x-biz.ts')).to.eq(
-            `import Component, { tracked } from 'sparkles-component';
+            `import Component from 'sparkles-component';
 
 export default class XBiz extends Component {
 
@@ -177,7 +177,7 @@ describe('MU App Layout: ember generate and destroy a sparkle component', functi
         ['sparkles-component', 'x-foo'],
         file => {
           expect(file('src/ui/components/x-foo/component.js')).to.eq(
-            `import Component, { tracked } from 'sparkles-component';
+            `import Component from 'sparkles-component';
 
 export default class XFoo extends Component {
 
@@ -200,7 +200,7 @@ export default class XFoo extends Component {
         ['sparkles-component', 'x-foo', '--lang', 'js'],
         file => {
           expect(file('src/ui/components/x-foo/component.js')).to.eq(
-            `import Component, { tracked } from 'sparkles-component';
+            `import Component from 'sparkles-component';
 
 export default class XFoo extends Component {
 
@@ -223,7 +223,7 @@ export default class XFoo extends Component {
         ['sparkles-component', 'x-foo', '--lang', 'ts'],
         file => {
           expect(file('src/ui/components/x-foo/component.ts')).to.eq(
-            `import Component, { tracked } from 'sparkles-component';
+            `import Component from 'sparkles-component';
 
 export default class XFoo extends Component {
 
