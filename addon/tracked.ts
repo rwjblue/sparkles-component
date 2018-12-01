@@ -10,7 +10,9 @@ function setupObservers(instance: object, dependentKeys: string[], notifyMethod:
   }
 }
 
-function descriptorForTrackedComputedProperty(_target: any, key: string | symbol, desc: PropertyDescriptor, dependencies?: string[]) {
+function descriptorForTrackedComputedProperty(elementDescriptor: ElementDescriptor, dependencies?: string[]) {
+  const { key, descriptor: desc } = elementDescriptor;
+
   // TODO: really should use WeakSet here, but that isn't available on IE11
   const OBSERVERS_SETUP = new WeakMap();
 
@@ -62,13 +64,13 @@ function descriptorForTrackedComputedProperty(_target: any, key: string | symbol
     };
   }
 
-  return desc;
+  return elementDescriptor.descriptor = desc;
 }
 
-function installTrackedProperty(_target: object, key: string | symbol, descriptor?: PropertyDescriptor & { initializer: (() => void)}): PropertyDescriptor {
+function installTrackedProperty(elementDescriptor: ElementDescriptor): ElementDescriptor {
   // only happens in babel, never in TS (Sept 2018)
   // TODO check for whether initializer is a function
-  const initializer = descriptor && descriptor.initializer;
+  const { initializer, key } = elementDescriptor;
 
   let values = new WeakMap();
 
@@ -90,30 +92,43 @@ function installTrackedProperty(_target: object, key: string | symbol, descripto
   }
 
   return {
-    configurable: true,
-    // TODO: correcting a misspelling caused chrome to error
-    // writable: true,
+    kind: "field",
+    placement: "prototype",
+    key,
+    descriptor: {
+      configurable: true,
+      // TODO: correcting a misspelling caused chrome to error
+      // writable: true,
 
-    get,
-    set(value) {
-      if (typeof key === 'string') {
-        values.set(this, value);
-        Ember.notifyPropertyChange(this, key);
-      } else if (DEBUG) {
-        throw new Error(`@tracked - unsupported property type ${String(key)}`);
+      get,
+      set(value) {
+        if (typeof key === 'string') {
+          values.set(this, value);
+          Ember.notifyPropertyChange(this, key);
+        } else if (DEBUG) {
+          throw new Error(`@tracked - unsupported property type ${String(key)}`);
+        }
       }
     }
   };
 }
 
 
-function _tracked(target: object, key: string | symbol, descriptor?: PropertyDescriptor, dependencies?: string[]): PropertyDescriptor {
-  // descriptor is undefined for typescript class fields
-  if (descriptor === undefined || 'initializer' in descriptor) {
-    return installTrackedProperty(target, key, descriptor);
+function _tracked(elementDescriptor: ElementDescriptor, dependencies?: string[]): PropertyDescriptor {
+  if ('initializer' in elementDescriptor) {
+    return installTrackedProperty(elementDescriptor);
   } else {
-    return descriptorForTrackedComputedProperty(target, key, descriptor, dependencies);
+    return descriptorForTrackedComputedProperty(elementDescriptor, dependencies);
   }
+}
+
+interface ElementDescriptor {
+  kind: 'method' | 'field' | 'initializer';
+  key: string;
+  descriptor: PropertyDescriptor;
+  placement: 'static' | 'prototype' | 'own';
+  initializer?: () => any;
+  decorators?: any[];
 }
 
 // type CompatiblePropertyDecorator = (target: object, key: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor;
@@ -134,10 +149,11 @@ export function tracked(
   // if called for `@tracked('foo')`
   if (typeof targetOrArgs === 'string') { //  @tracked('foo', 'bar')
     const args =  [targetOrArgs, secondArg as string, descriptorOrString as string, ...rest];
-    return function(target: object, key: string | symbol, descriptor: PropertyDescriptor) {
-      return _tracked(target, key, descriptor, args);
+    return function(elementDescriptor: ElementDescriptor) {
+      return _tracked(elementDescriptor, args);
     }
-  } else { // @tracked
-    return _tracked(targetOrArgs, secondArg, descriptorOrString as PropertyDescriptor | undefined);
   }
+
+  // @tracked
+  return _tracked(targetOrArgs as ElementDescriptor);
 }
