@@ -22,11 +22,12 @@
     "postpublish": "ember ts:clean"
   },
   "dependencies": {
+    "@ember-decorators/utils": "^3.1.4",
     "@glimmer/env": "^0.1.7",
     "ember-cli-babel": "^7.1.2"
   },
   "devDependencies": {
-    "@ember-decorators/babel-transforms": "^2.1.1",
+    "@ember-decorators/babel-transforms": "^3.1.4",
     "@ember/optional-features": "^0.6.1",
     "@types/ember": "^3.0.15",
     "@types/ember-qunit": "^3.4.0",
