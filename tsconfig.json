@@ -17,8 +17,6 @@
     "noEmit": true,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
     "baseUrl": ".",
     "module": "es6",
     "paths": {
@@ -35,6 +33,12 @@
       "sparkles-component/*": [
         "addon/*"
       ],
+      "sparkles-component/test-support": [
+        "addon-test-support"
+      ],
+      "sparkles-component/test-support/*": [
+        "addon-test-support/*"
+      ],
       "*": [
         "types/*"
       ]
@@ -44,6 +48,8 @@
     "app/**/*",
     "addon/**/*",
     "tests/**/*",
-    "types/**/*"
+    "types/**/*",
+    "test-support/**/*",
+    "addon-test-support/**/*"
   ]
 }
