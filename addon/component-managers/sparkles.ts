@@ -3,6 +3,7 @@ import { getOwner, setOwner } from '@ember/application';
 import ApplicationInstance from '@ember/application/instance';
 import { capabilities } from '@ember/component';
 import SparklesComponent from 'sparkles-component';
+import { deprecate } from '@ember/debug';
 
 export interface ComponentManagerArgs {
   named: object;
@@ -16,8 +17,7 @@ export default class SparklesComponentManager {
     return new this(owner);
   }
   capabilities: any;
-  constructor(owner: ApplicationInstance) {
-    setOwner(this, owner);
+  constructor(private owner: ApplicationInstance) {
     this.capabilities = capabilities('3.4', {
       destructor: true,
       asyncLifecycleCallbacks: true,
@@ -25,8 +25,16 @@ export default class SparklesComponentManager {
   }
 
   createComponent(Klass: typeof SparklesComponent, args: ComponentManagerArgs): CreateComponentResult {
-    let instance = new Klass(args.named);
-    setOwner(instance, getOwner(this));
+    let { owner } = this;
+
+    let instance = new Klass(args.named, owner);
+
+    // check to make sure that owner was properly set, this ensures `super(...arguments)` was called
+    if (getOwner(instance) !== owner) {
+      deprecate(`must call super with all arguments in the constructor for ${Klass.name}`, false, { id: 'sparkles-component.super-arguments', until: '2.0.0' });
+      setOwner(instance, owner);
+    }
+
     return instance as CreateComponentResult;
   }
 

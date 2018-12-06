@@ -4,6 +4,7 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render, clearRender, click } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import { getOwner } from '@ember/application';
+import Service from '@ember/service';
 
 module('Integration | Component | sparkles-component', function(hooks) {
   let InstrumentedComponent;
@@ -118,6 +119,26 @@ module('Integration | Component | sparkles-component', function(hooks) {
     assert.dom('p').hasText('HELLO!');
   });
 
+  test('it can access injections in constructor', async function(assert) {
+    this.owner.register('service:something', Service.extend({
+      someMethod() { return 'it works!'; }
+    }));
+    class ComponentUnderTest extends SparklesComponent {
+      constructor() {
+        super(...arguments);
+
+        let owner = getOwner(this);
+        let something = owner.lookup('service:something');
+        this.text = something.someMethod();
+      }
+    }
+    this.owner.register('component:under-test', ComponentUnderTest);
+    this.owner.register('template:components/under-test', hbs`<p>{{this.text}}</p>`);
+
+    await render(hbs`<UnderTest />`);
+    assert.dom('p').hasText('it works!');
+  });
+
   test('it can use tracked to recompute when args change', async function(assert) {
     this.owner.register('component:under-test', class extends SparklesComponent {
       @tracked('args')
@@ -221,5 +242,24 @@ module('Integration | Component | sparkles-component', function(hooks) {
     );
     await render(hbs`<UnderTest />`);
     assert.dom('p').hasText('Environment: test');
-  })
+  });
+
+  test('not calling super with all arguments issues deprecation', async function(assert) {
+    this.owner.register('component:under-test', class UnderTest extends SparklesComponent {
+      constructor(args) {
+        super(args);
+      }
+      get environment() {
+        return getOwner(this).resolveRegistration("config:environment").environment;
+      }
+    });
+    this.owner.register(
+      'template:components/under-test',
+      hbs`<p>Environment: {{this.environment}}</p>`
+    );
+    await render(hbs`<UnderTest />`);
+    assert.dom('p').hasText('Environment: test');
+
+    assert.deprecationsInclude(`must call super with all arguments in the constructor for UnderTest`);
+  });
 });
