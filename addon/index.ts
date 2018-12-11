@@ -1,7 +1,12 @@
 import { setComponentManager } from '@ember/component';
+import { tracked } from './tracked';
 
 class SparklesComponent<T = object> {
-  constructor(public args: T) {}
+  @tracked args: T;
+
+  constructor(args: T) {
+    this.args = args;
+  }
 
   didInsertElement() {}
   didUpdate() {}

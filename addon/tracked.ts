@@ -1,143 +1,180 @@
-import Ember from 'ember';
 import { assert } from '@ember/debug';
 import { DEBUG } from '@glimmer/env';
-import { addObserver } from '@ember/object/observers';
+import { decoratorWithParams } from '@ember-decorators/utils/decorator';
+import WeakMapWithDefault from './utils/weak-map-with-default';
+import MapWithDefault from './utils/map-with-default';
+import notifyPropertyChange from './utils/notify-property-change';
 
-function setupObservers(instance: object, dependentKeys: string[], notifyMethod: (() => void)) {
-  for (let i = 0; i < dependentKeys.length; i++) {
-    let dependentKey = dependentKeys[i];
-    addObserver(instance, dependentKey, instance, notifyMethod);
+type Key = string | number | symbol;
+
+const INITIALIZER = Object.freeze({
+  key: Symbol('initializer'),
+  kind: 'field',
+  placement: 'own',
+  descriptor: {
+    configurable: false,
+    enumerable: false,
+    writable: false
+  }
+});
+
+const VALUES = new WeakMap<any, any>();
+
+type WithKeysOf<O> = { [key in keyof O]: O[key] };
+
+function getValue<O, K extends keyof O>(obj: O, key: K): O[K] | undefined {
+  return VALUES.has(obj) ? (VALUES.get(obj) as WithKeysOf<O>)[key] : undefined;
+}
+
+function setValue<O, K extends keyof O>(obj: O, key: K, value: O[K]): void {
+  if (!VALUES.has(obj)) {
+    VALUES.set(obj, Object.create(null));
+  }
+  (VALUES.get(obj) as WithKeysOf<O>)[key] = value;
+}
+
+type Field<O extends object> = [O, keyof O];
+const STACK: Field<any>[] = [];
+
+export function trackGet<O, K extends keyof O>(
+  key: K,
+  getter: (this: O) => O[K] | undefined = function() {
+    return getValue(this, key);
+  }
+) {
+  return function(this: O) {
+    const frame: Field<O> = [this, key];
+    const marker = STACK.push(frame);
+
+    const value = getter.call(this);
+
+    assert(
+      `@tracked: stack size (${
+        STACK.length
+      }) is below expected size ${marker}.`,
+      STACK.length >= marker
+    );
+
+    clearDependencies(frame);
+    for (let dependency: Field<any>; STACK.length > marker; ) {
+      dependency = STACK.pop()!;
+      declareDependency(frame, dependency);
+    }
+
+    if (DEBUG) {
+      const lastFrame = STACK[STACK.length - 1];
+      assert(
+        `@tracked: Stack frames do not match.\nExpected: '${frame}'\nReceived: ${lastFrame}`,
+        frame === lastFrame
+      );
+    }
+
+    return value;
+  };
+}
+
+function trackSet<O, K extends keyof O>(
+  key: K,
+  setter: (this: O, value: O[K]) => void = function(this: O, value: O[K]) {
+    setValue(this, key, value);
+  }
+) {
+  return function(this: O, value: O[K]) {
+    setter.call(this, value);
+    invalidateDependentsOf([this, key]);
+    notifyPropertyChange(this, key);
+  };
+}
+
+const DEPENDENCIES = new WeakMapWithDefault(
+  () => new MapWithDefault(() => new MapWithDefault(() => new Set<Key>()))
+);
+
+function declareDependency(from: Field<any>, on: Field<any>) {
+  DEPENDENCIES.get(on[0])
+    .get(on[1])
+    .get(from[0])
+    .add(from[1]);
+}
+
+function getDependentsOf<O extends object>([obj, key]: Field<O>): [
+  any,
+  ReadonlySet<Key>
+][] {
+  if (DEPENDENCIES.has(obj) && DEPENDENCIES.get(obj).has(key)) {
+    return Array.from(DEPENDENCIES.get(obj).get(key));
+  }
+
+  return [];
+}
+
+function invalidateDependentsOf<O extends object>(field: Field<O>) {
+  for (const [obj, keys] of getDependentsOf(field)) {
+    for (const key of keys) {
+      notifyPropertyChange(obj, key);
+    }
   }
 }
 
-function descriptorForTrackedComputedProperty(_target: any, key: string | symbol, desc: PropertyDescriptor, dependencies?: string[]) {
-  // TODO: really should use WeakSet here, but that isn't available on IE11
-  const OBSERVERS_SETUP = new WeakMap();
+function clearDependencies([obj, key]: Field<any>) {
+  // if (DEPENDENCIES.has(obj)) {
+  //   DEPENDENCIES.get(obj).delete(key);
+  // }
+}
 
+export const tracked = decoratorWithParams((desc, params: string[] = []) => {
   assert(
-    `You cannot use property paths with the tracked decorator, but for ${String(key)} you specified \`${(dependencies || []).join('`, `')}\`.`,
-    (function() {
-      if (dependencies === undefined) return true; // @tracked()
-      for (let i = 0; i < dependencies.length; i++) {
-        if (dependencies[i] !== undefined && dependencies[i].indexOf('.') > -1) {
-          return false;
+    '@tracked: You can only apply this decorator to class fields.',
+    desc.kind === 'field' || (desc.kind === 'method' && !desc.value)
+  );
+
+  const { descriptor, key, initializer } = desc;
+  const { get, set } = descriptor;
+
+  delete desc.initializer;
+  desc.kind = 'method';
+  delete descriptor.writable;
+
+  if (set) {
+    assert(
+      `@tracked: Marking property '${key} as tracked does not make sense, since it only has a setter.`,
+      get
+    );
+    descriptor.set = trackSet(key, set);
+  }
+  if (get) {
+    descriptor.get = trackGet(key, get);
+    if (DEBUG && !set) {
+      descriptor.set = function(value: any) {
+        throw new TypeError(
+          `@tracked: You cannot set the tracked property '${key}' to '${value}', because it only has a getter. Add a setter in order to set the value.`
+        );
+      };
+    }
+  }
+  if (!get && !set) {
+    descriptor.set = trackSet(key);
+    descriptor.get = trackGet(key);
+  }
+
+  if (initializer) {
+    desc.extras = [
+      {
+        ...INITIALIZER,
+        initializer() {
+          setValue(this, key, initializer.call(this));
         }
       }
-
-      return true;
-    })()
-  );
-  const getterProvided = desc.get;
-  const setterProvided = desc.set;
-  if (!getterProvided) {
-    throw new Error(`@tracked - property descriptor for ${String(key)} must include a get() function`);
-  }
-
-  // will be bound to the instance when invoked
-  function notify(this: object) {
-    if (typeof key === 'string') {
-      Ember.notifyPropertyChange(this, key);
-    } else if (DEBUG) {
-      throw new Error(`@tracked - unsupported property type ${String(key)}`);
-    }
-  }
-
-  desc.get = function() {
-    if (!OBSERVERS_SETUP.has(this) && Array.isArray(dependencies)) {
-      setupObservers(this, dependencies, notify);
-    }
-    OBSERVERS_SETUP.set(this, true);
-
-    return getterProvided.call(this);
-  };
-
-  if (setterProvided) {
-    desc.set = function(value) {
-      if (typeof key === 'string') {
-        Ember.notifyPropertyChange(this, key);
-        setterProvided.call(this, value);
-      } else if (DEBUG) {
-        throw new Error(`@tracked - unsupported property type ${String(key)}`);
-      }
-    };
+    ];
   }
 
   return desc;
-}
-
-function installTrackedProperty(_target: object, key: string | symbol, descriptor?: PropertyDescriptor & { initializer: (() => void)}): PropertyDescriptor {
-  // only happens in babel, never in TS (Sept 2018)
-  // TODO check for whether initializer is a function
-  const initializer = descriptor && descriptor.initializer;
-
-  let values = new WeakMap();
-
-  let get;
-  if (typeof initializer === 'function') {
-    get = function(this: object) {
-      if (values.has(this)) {
-        return values.get(this);
-      } else {
-        let value = initializer.call(this);
-        values.set(this, value);
-        return value;
-      }
-    };
-  } else {
-    get = function(this: object) {
-      return values.get(this);
-    }
-  }
-
-  return {
-    configurable: true,
-    // TODO: correcting a misspelling caused chrome to error
-    // writable: true,
-
-    get,
-    set(value) {
-      if (typeof key === 'string') {
-        values.set(this, value);
-        Ember.notifyPropertyChange(this, key);
-      } else if (DEBUG) {
-        throw new Error(`@tracked - unsupported property type ${String(key)}`);
-      }
-    }
-  };
-}
-
-
-function _tracked(target: object, key: string | symbol, descriptor?: PropertyDescriptor, dependencies?: string[]): PropertyDescriptor {
-  // descriptor is undefined for typescript class fields
-  if (descriptor === undefined || 'initializer' in descriptor) {
-    return installTrackedProperty(target, key, descriptor);
-  } else {
-    return descriptorForTrackedComputedProperty(target, key, descriptor, dependencies);
-  }
-}
-
-// type CompatiblePropertyDecorator = (target: object, key: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor;
+});
 
 // @tracked
 // TODO: replace return w/ PropertyDescriptor once TS gets their decorator act together
-export function tracked(target: object, propertyKey: string | symbol, descriptor?: PropertyDescriptor): any;
-// @tracked('foo', 'bar')
-// TODO: replace return w/ CompatiblePropertyDecorator
-export function tracked(...args: string[]): any;
-// TODO: replace return w/ CompatiblePropertyDecorator | PropertyDescriptor
 export function tracked(
-  targetOrArgs: (string | object),
-  secondArg: string | symbol,
-  descriptorOrString: string | PropertyDescriptor | undefined,
-  ...rest: string[]): any
-  {
-  // if called for `@tracked('foo')`
-  if (typeof targetOrArgs === 'string') { //  @tracked('foo', 'bar')
-    const args =  [targetOrArgs, secondArg as string, descriptorOrString as string, ...rest];
-    return function(target: object, key: string | symbol, descriptor: PropertyDescriptor) {
-      return _tracked(target, key, descriptor, args);
-    }
-  } else { // @tracked
-    return _tracked(targetOrArgs, secondArg, descriptorOrString as PropertyDescriptor | undefined);
-  }
-}
+  target: object,
+  propertyKey: string | symbol,
+  descriptor?: PropertyDescriptor
+): any;
