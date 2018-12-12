@@ -104,7 +104,6 @@ function installTrackedProperty(key: string | symbol, descriptor?: PropertyDescr
   };
 }
 
-
 function _tracked(
   key: string | symbol,
   descriptor?: PropertyDescriptor,
@@ -119,7 +118,7 @@ function _tracked(
 }
 
 // TODO: replace return w/ PropertyDescriptor once TS gets their decorator act together
-type TSDecorator = (target: object, propertyKey: string | symbol, descriptor?: PropertyDescriptor) => any;
+type TSDecorator = (target: object, propertyKey: string | symbol, descriptor?: PropertyDescriptor) => void;
 type TrackedDecorator = TSDecorator & ((...args: string[]) => TSDecorator);
 
 export const tracked: TrackedDecorator = decoratorWithParams((desc, params = []) => {
