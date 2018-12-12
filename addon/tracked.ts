@@ -69,7 +69,7 @@ function descriptorForTrackedComputedProperty(key: string | symbol, desc: Proper
   return desc;
 }
 
-function installTrackedProperty(key: string | symbol, descriptor: PropertyDescriptor, initializer?: () => any): PropertyDescriptor {
+function installTrackedProperty(key: string | symbol, descriptor?: PropertyDescriptor, initializer?: () => any): PropertyDescriptor {
   let values = new WeakMap();
 
   let get;
@@ -90,8 +90,8 @@ function installTrackedProperty(key: string | symbol, descriptor: PropertyDescri
   }
 
   return {
-    configurable: descriptor.configurable,
-    enumerable: descriptor.enumerable,
+    configurable: descriptor ? descriptor.configurable : true,
+    enumerable: descriptor ? descriptor.enumerable : true,
     get,
     set(value) {
       if (typeof key === 'string') {
@@ -107,11 +107,11 @@ function installTrackedProperty(key: string | symbol, descriptor: PropertyDescri
 
 function _tracked(
   key: string | symbol,
-  descriptor: PropertyDescriptor,
+  descriptor?: PropertyDescriptor,
   initializer?: () => any,
   dependencies?: string[]
 ): PropertyDescriptor {
-  if (typeof descriptor.get !== 'function' && typeof descriptor.set !== 'function') {
+  if (!descriptor || typeof descriptor.get !== 'function' && typeof descriptor.set !== 'function') {
     return installTrackedProperty(key, descriptor, initializer);
   } else {
     return descriptorForTrackedComputedProperty(key, descriptor, dependencies);
@@ -124,7 +124,7 @@ type TrackedDecorator = TSDecorator & ((...args: string[]) => TSDecorator);
 
 export const tracked: TrackedDecorator = decoratorWithParams((desc, params = []) => {
   assert(`@tracked - Can only be used on class fields.`, desc.kind === 'field' || desc.kind === 'method');
-  const descriptor = _tracked(desc.key, desc.descriptor!, desc.initializer, params);
+  const descriptor = _tracked(desc.key, desc.descriptor, desc.initializer, params);
 
   return {
     ...desc,
