@@ -1,11 +1,8 @@
-import Ember from 'ember';
 import { assert } from '@ember/debug';
 import { DEBUG } from '@glimmer/env';
+import { notifyPropertyChange } from '@ember/object';
 import { addObserver } from '@ember/object/observers';
 import { decoratorWithParams } from '@ember-decorators/utils/decorator';
-
-// @ts-ignore
-const notifyPropertyChange: (target: object, key: string) => void = Ember.notifyPropertyChange;
 
 function setupObservers(instance: object, dependentKeys: string[], notifyMethod: (() => void)) {
   for (let i = 0; i < dependentKeys.length; i++) {
