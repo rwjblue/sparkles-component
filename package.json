@@ -23,7 +23,7 @@
     "nodetest": "mocha node-tests --recursive"
   },
   "dependencies": {
-    "@ember-decorators/utils": "^3.1.5",
+    "@ember-decorators/utils": "npm:@buschtoens/utils@^3.1.6-beta.1",
     "@glimmer/env": "^0.1.7",
     "ember-cli-babel": "^7.2.0",
     "ember-cli-get-component-path-option": "^1.0.0",
