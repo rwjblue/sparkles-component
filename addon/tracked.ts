@@ -4,7 +4,7 @@ import { notifyPropertyChange } from '@ember/object';
 import { addObserver } from '@ember/object/observers';
 import { decoratorWithParams } from '@ember-decorators/utils/decorator';
 
-function setupObservers(instance: object, dependentKeys: string[], notifyMethod: (() => void)) {
+function setupObservers<O extends object>(instance: O, dependentKeys: (keyof O)[], notifyMethod: (() => void)) {
   for (let i = 0; i < dependentKeys.length; i++) {
     let dependentKey = dependentKeys[i];
     addObserver(instance, dependentKey, instance, notifyMethod);
@@ -45,7 +45,7 @@ function descriptorForTrackedComputedProperty(key: string | symbol, desc: Proper
 
   desc.get = function() {
     if (!OBSERVERS_SETUP.has(this) && Array.isArray(dependencies)) {
-      setupObservers(this, dependencies, notify);
+      setupObservers<any>(this, dependencies, notify);
     }
     OBSERVERS_SETUP.set(this, true);
 
