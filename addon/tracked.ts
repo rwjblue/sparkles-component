@@ -107,13 +107,21 @@ function installTrackedProperty(_target: object, key: string | symbol, descripto
 }
 
 
-function _tracked(target: object, key: string | symbol, descriptor?: PropertyDescriptor, dependencies?: string[]): PropertyDescriptor {
+function _tracked(target: object, key: string | symbol, descriptor?: PropertyDescriptor, dependencies?: string[]): any {
+  let desc: PropertyDescriptor;
   // descriptor is undefined for typescript class fields
   if (descriptor === undefined || 'initializer' in descriptor) {
-    return installTrackedProperty(target, key, descriptor);
+    desc = installTrackedProperty(target, key, descriptor);
   } else {
-    return descriptorForTrackedComputedProperty(target, key, descriptor, dependencies);
+    desc = descriptorForTrackedComputedProperty(target, key, descriptor, dependencies);
   }
+
+  return {
+    kind: 'method',
+    placement: 'prototype',
+    key,
+    descriptor: desc
+  };
 }
 
 // type CompatiblePropertyDecorator = (target: object, key: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor;
