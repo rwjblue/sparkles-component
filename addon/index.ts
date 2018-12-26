@@ -12,9 +12,13 @@ class SparklesComponent<T = object> {
   destroy() {}
 }
 
-setComponentManager((owner: ApplicationInstance) => {
-  return new SparklesComponentManager(owner)
-}, SparklesComponent);
+// if (ember >= '3.8.0') {
+//   setComponentManager((owner: ApplicationInstance) => {
+//     return new SparklesComponentManager(owner)
+//   }, SparklesComponent);
+// } else {
+  setComponentManager('sparkles', SparklesComponent);
+// }
 
 export default SparklesComponent;
 
