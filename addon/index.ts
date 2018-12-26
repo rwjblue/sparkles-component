@@ -1,5 +1,6 @@
 import ApplicationInstance from '@ember/application/instance';
 import { setComponentManager } from '@ember/component';
+import { gte } from 'ember-compatibility-helpers';
 import SparklesComponentManager from './component-managers/sparkles';
 
 class SparklesComponent<T = object> {
@@ -12,13 +13,13 @@ class SparklesComponent<T = object> {
   destroy() {}
 }
 
-// if (ember >= '3.8.0') {
-//   setComponentManager((owner: ApplicationInstance) => {
-//     return new SparklesComponentManager(owner)
-//   }, SparklesComponent);
-// } else {
+if (gte('3.8.0')) {
+  setComponentManager((owner: ApplicationInstance) => {
+    return new SparklesComponentManager(owner)
+  }, SparklesComponent);
+} else {
   setComponentManager('sparkles', SparklesComponent);
-// }
+}
 
 export default SparklesComponent;
 
