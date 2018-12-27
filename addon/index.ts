@@ -13,7 +13,7 @@ class SparklesComponent<T = object> {
   destroy() {}
 }
 
-if (gte('3.8.0')) {
+if (gte('3.8.0-beta.1')) {
   setComponentManager((owner: ApplicationInstance) => {
     return new SparklesComponentManager(owner)
   }, SparklesComponent);
