@@ -727,20 +727,20 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@ember-decorators/babel-transforms@^3.1.5":
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/@ember-decorators/babel-transforms/-/babel-transforms-3.1.5.tgz#6df543f7f1d862ad54d05555d548805e032f6514"
-  integrity sha512-dTcpIylGj+gU+GM3Se0mVn/NGcIFLDTJYE0h04WtBT+Szon8y0SKFPO4pyEz+NINNU6w+PRP/Y7GsT8txxdrYg==
+"@ember-decorators/babel-transforms@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@ember-decorators/babel-transforms/-/babel-transforms-4.0.0.tgz#a1358f5d185c3e4f722b5b30d5bae6e9884cae07"
+  integrity sha512-67bJ5EXwMYd96WiiloSsgcvZplSUKSKl20rmjFve3+AXWislTQbnTKjwMPNMjKeajEALwmC7if+EkQUoCqrUog==
   dependencies:
     "@babel/plugin-proposal-class-properties" "^7.1.0"
     "@babel/plugin-proposal-decorators" "^7.1.2"
     ember-cli-babel-plugin-helpers "^1.0.0"
     ember-cli-version-checker "^2.1.0"
 
-"@ember-decorators/utils@npm:@buschtoens/utils@^3.1.6-beta.1":
-  version "3.1.6-beta.1"
-  resolved "https://registry.yarnpkg.com/@buschtoens/utils/-/utils-3.1.6-beta.1.tgz#5047e9d907d5e44e5a2a2995358ebd9231c9b2ae"
-  integrity sha512-t9vAqG/Gw+Ndg+cXZpJBgGIpmLilyfxUPlxYDAA9m0Tiayneba2a90LYjwPtpmjBUPZR2afVaW/2dfx8k+4xWw==
+"@ember-decorators/utils@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@ember-decorators/utils/-/utils-4.0.0.tgz#f338e6e2e20bd781e708bf4214976f3520b7ffe3"
+  integrity sha512-uK8F9NjYO7TXH+egidJren/cZK+u111mu3W03lNUfrjbHOnKzIdMeb6JBgs5J1giQb8R2MurfyKW92xNJEhc1w==
   dependencies:
     babel-plugin-debug-macros "^0.1.11"
     ember-cli-babel "^7.1.3"

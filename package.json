@@ -23,7 +23,7 @@
     "nodetest": "mocha node-tests --recursive"
   },
   "dependencies": {
-    "@ember-decorators/utils": "npm:@buschtoens/utils@^3.1.6-beta.1",
+    "@ember-decorators/utils": "^4.0.0",
     "@glimmer/env": "^0.1.7",
     "ember-cli-babel": "^7.2.0",
     "ember-cli-get-component-path-option": "^1.0.0",
@@ -35,7 +35,7 @@
     "ember-compatibility-helpers": "^1.1.2"
   },
   "devDependencies": {
-    "@ember-decorators/babel-transforms": "^3.1.5",
+    "@ember-decorators/babel-transforms": "^4.0.0",
     "@ember/optional-features": "^0.6.1",
     "@types/ember": "~3.0.26",
     "@types/ember-qunit": "~3.4.3",
