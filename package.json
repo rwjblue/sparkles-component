@@ -77,6 +77,8 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config",
-    "defaultBlueprint": "install-sparkles"
-  }
+    "defaultBlueprint": "install-sparkles",
+    "main": "ember-addon-main.js"
+  },
+  "main": "addon/index.js"
 }

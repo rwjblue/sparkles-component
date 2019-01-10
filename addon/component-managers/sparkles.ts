@@ -2,7 +2,7 @@ import { set } from '@ember/object';
 import { getOwner, setOwner } from '@ember/application';
 import ApplicationInstance from '@ember/application/instance';
 import { capabilities } from '@ember/component';
-import SparklesComponent from 'sparkles-component';
+import SparklesComponent from '../';
 
 export interface ComponentManagerArgs {
   named: object;
