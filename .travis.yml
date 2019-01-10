@@ -31,11 +31,15 @@ jobs:
     # runs linting and tests with current locked deps
     - stage: 'Tests'
       env: EMBER_TRY_SCENARIO=ember-lts-3.4
+      env: EMBER_TRY_SCENARIO=ember-lts-3.4-legacy-decorators
     - env: EMBER_TRY_SCENARIO=ember-release
+    - env: EMBER_TRY_SCENARIO=ember-release-legacy-decorators
     - env: EMBER_TRY_SCENARIO=ember-beta
+    - env: EMBER_TRY_SCENARIO=ember-beta-legacy-decorators
     - env: EMBER_TRY_SCENARIO=ember-canary
+    - env: EMBER_TRY_SCENARIO=ember-canary-legacy-decorators
     - env: EMBER_TRY_SCENARIO=ember-default
-    - env: EMBER_TRY_SCENARIO=ember-default-with-jquery
+    - env: EMBER_TRY_SCENARIO=ember-default-legacy-decorators
     - name: 'Blueprints'
       script: yarn nodetest
 
