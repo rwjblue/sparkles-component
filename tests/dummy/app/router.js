@@ -8,6 +8,7 @@ const Router = EmberRouter.extend({
 
 Router.map(function() {
   this.route('conference-speakers');
+  this.route('insert-element');
 });
 
 export default Router;

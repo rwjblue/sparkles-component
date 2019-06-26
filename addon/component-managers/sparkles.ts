@@ -16,8 +16,11 @@ export default class SparklesComponentManager {
     return new this(owner);
   }
   capabilities: any;
+  isInteractive: boolean;
+
   constructor(owner: ApplicationInstance) {
     setOwner(this, owner);
+    this.isInteractive = getOwner(this).lookup('-environment:main').isInteractive;
     this.capabilities = capabilities('3.4', {
       destructor: true,
       asyncLifecycleCallbacks: true,
@@ -43,7 +46,9 @@ export default class SparklesComponentManager {
   }
 
   didCreateComponent(component: CreateComponentResult) {
-    component.didInsertElement();
+    if (this.isInteractive) {
+      component.didInsertElement();
+    }
   }
 
   didUpdateComponent(component: CreateComponentResult) {
