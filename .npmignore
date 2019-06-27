@@ -9,13 +9,16 @@
 /.bowerrc
 /.editorconfig
 /.ember-cli
+/.env*
 /.eslintignore
 /.eslintrc.js
 /.gitignore
-/.watchmanconfig
+/.template-lintrc.js
 /.travis.yml
+/.watchmanconfig
 /bower.json
 /config/ember-try.js
+/CONTRIBUTING.md
 /ember-cli-build.js
 /testem.js
 /tests/
@@ -26,4 +29,3 @@
 /.node_modules.ember-try/
 /bower.json.ember-try
 /package.json.ember-try
-/node-tests
