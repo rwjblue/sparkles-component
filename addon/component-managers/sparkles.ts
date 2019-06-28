@@ -52,6 +52,8 @@ export default class SparklesComponentManager {
   }
 
   didUpdateComponent(component: CreateComponentResult) {
-    component.didUpdate();
+    if (this.isInteractive) {
+      component.didUpdate();
+    }
   }
 }
