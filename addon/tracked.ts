@@ -108,10 +108,8 @@ function _tracked(
   dependencies?: string[]
 ): PropertyDescriptor {
   if (!descriptor || typeof descriptor.get !== 'function' && typeof descriptor.set !== 'function') {
-    console.log(key, 'installTrackedProperty');
     return installTrackedProperty(key, descriptor, initializer);
   } else {
-    console.log(key, 'descriptorForTrackedComputedProperty');
     return descriptorForTrackedComputedProperty(key, descriptor, dependencies);
   }
 }
@@ -120,7 +118,7 @@ function _tracked(
 type TSDecorator = (target: object, propertyKey: string | symbol, descriptor?: PropertyDescriptor) => void;
 type TrackedDecorator = TSDecorator & ((...args: string[]) => TSDecorator);
 
-export const tracked: TrackedDecorator = decoratorWithParams<string[], object>((target, key, desc, params = []) => {
+export const tracked: TrackedDecorator = decoratorWithParams<string[], object>((_target, key, desc, params = []) => {
   assert(`@tracked - Can only be used on class fields.`, typeof desc.initializer === 'function' || typeof desc.get === 'function' || desc.value === undefined);
   const descriptor = _tracked(key, desc, desc.initializer, params);
 
