@@ -1,10 +1,12 @@
 'use strict';
 
+// eslint-disable-next-line node/no-unpublished-require
 const blueprintHelpers = require('ember-cli-blueprint-test-helpers/helpers');
 const setupTestHooks = blueprintHelpers.setupTestHooks;
 const emberNew = blueprintHelpers.emberNew;
 const { emberGenerateDestroy } = blueprintHelpers;
 
+// eslint-disable-next-line node/no-unpublished-require
 const expect = require('ember-cli-blueprint-test-helpers/chai').expect;
 
 describe('Classic App Layout: ember generate and destroy a sparkle component', function() {
